@@ -20,6 +20,54 @@ LangGraph-Learning-Python/
 └── README.md
 ```
 
+## LangGraph Basics
+
+### Core Concepts
+
+**State**: The data structure that flows through your graph. It represents the current state of your application and gets passed between nodes. Define state using TypedDict or Pydantic models.
+
+**Nodes**: Functions that perform specific tasks. Each node receives the current state, processes it, and returns updates to the state. Nodes are the building blocks of your graph.
+
+**Graph**: The overall structure that connects nodes together. It defines the workflow and how data flows through your application.
+
+**Edges**: Direct connections between nodes that define the flow of execution. Once a node completes, edges determine which node runs next.
+
+**Conditional Edges**: Dynamic routing based on the current state. They allow your graph to make decisions about which path to take based on logic you define.
+
+**Start**: The entry point of your graph. This is where execution begins and the initial state enters the workflow.
+
+**End**: The terminal point of your graph. When execution reaches an end node, the graph completes and returns the final state.
+
+**StateGraph**: The main class used to build your graph. You define nodes, add edges, set the entry point, and compile the graph into an executable workflow.
+
+### Basic Pattern
+
+```python
+from langgraph.graph import StateGraph, START, END
+from typing import TypedDict
+
+# Define your state
+class State(TypedDict):
+    messages: list[str]
+    count: int
+
+# Create the graph
+graph = StateGraph(State)
+
+# Add nodes
+graph.add_node("process", process_function)
+graph.add_node("validate", validate_function)
+
+# Add edges
+graph.add_edge(START, "process")
+graph.add_conditional_edges("process", routing_function)
+graph.add_edge("validate", END)
+
+# Compile and run
+app = graph.compile()
+result = app.invoke(initial_state)
+```
+
 ## Branch Strategy
 
 Each exercise will be in its own branch:
